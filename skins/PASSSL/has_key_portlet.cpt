@@ -1,0 +1,43 @@
+<html xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      i18n:domain="plone">
+
+<body>
+
+<!-- Authentication Note box - - place above login portlet -->
+
+<div metal:define-macro="portlet"
+     tal:omit-tag=""
+     tal:define="passsl     nocall:here/acl_users/credentials_passsl;
+  	         userlist python:passsl.ssl_auth_get_mapped_users(request)"
+     tal:condition="python: isAnon and (request.environ.get('SSL_CLIENT_S_DN','') != '' or request.get('HTTP_X_S_DN','') != '')">
+
+	
+    <div class="portlet"
+         id="portlet-ssl-auth"
+         tal:condition="python: len(userlist) > 0" >
+
+        <h5>Authentication Note</h5>
+
+       <div class="portletBody">
+
+                             You have an SSL Certificate for UID 
+                            <b><span tal:content="python:' or '.join(userlist)">id</span></b>.<br />
+                            You do not need to enter a password for that account.
+	</div>
+    </div>
+    <div class="portlet"
+         id="portlet-ssl-auth"
+         tal:condition="python: len(userlist) == 0" >
+
+        <h5>Authentication Note</h5>
+
+       <div class="portletBody">
+	     You have an SSL Certificate, but it is not mapped to any local
+	     users.  You should go to the <a href="join_form">join form</a> to 
+	     create an account that can use your SSL Certificate to log in.
+	</div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,2 @@
+PROJECTNAME='PASSSL'
+GLOBALS=globals()

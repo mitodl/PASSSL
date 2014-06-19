@@ -1,0 +1,103 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"
+      i18n:domain="plone">
+
+  <body>
+  <h1 tal:define="global print request/pp | nothing"></h1>
+  <h1 tal:replace="structure here/manage_page_header">Header</h1>
+  <h2 tal:condition="not: print" tal:define="manage_tabs_message options/manage_
+tabs_message | nothing"
+    tal:replace="structure here/manage_tabs">Tabs</h2>
+
+
+    <div 
+         tal:define="
+		     auto_login_users_flag here/ssl_auth_get_auto_login_users_flag;
+                     pair             here/ssl_auth_getmaps;
+                     camap            python:pair[0];
+                     dnmap            python:pair[1]">
+
+	<h1>AutoLogin</h1>
+
+         <form action="manage_updateMappings" method="POST">
+           <input type="checkbox" name="auto_login_users_flag" tal:attributes="checked auto_login_users_flag" value="1" />
+           Auto-login single-account certificate users
+	  <br />
+           <input type="submit" class="context"  value="Update Auto Login flag"/>
+           <input type="hidden" name="change" value="update_password" />
+        </form>
+
+	<h1>CA Mappings</h1>
+	<p />
+	If a User Certificate's Issuer DN matches the first column in
+        the table, the Subject DN has a regular expression substitution
+        applied to it to make a user name.  The user can then log in
+        as that user without a password.
+
+         <form action="manage_updateMappings" method="POST">
+         <table border="1">
+           <tr><th>_</th><th>Issuer DN</th><th>regex</th><th>user</th></tr>
+           <tr tal:repeat="entry camap">
+	       <td> <input type="checkbox" name="deleteme:list" tal:attributes="value python:(entry.get('i_dn')+'+'+entry.get('regex')+'+'+entry.get('repl'))">
+               <td tal:content="python:entry.get('i_dn')">issuer</td>
+               <td tal:content="python:entry.get('regex')">regex</td>
+               <td tal:content="python:entry.get('repl')">user</td>
+           </tr>
+         </table>
+	   <p />
+           <input type="submit" class="context"  value="Delete checked entry"/>
+           <input type="hidden" name="change" value="del_camap" />
+           <input type="hidden" name="form.submitted" value="1" />
+         </form>
+	 <p />
+         <form action="manage_updateMappings" method="POST">
+	   Issuer DN:<br />
+           <input type="text" name="i_dn" size="40"/><br />
+	   Regex:<br />
+           <input type="text" name="regex" /><br />
+	   User:<br />
+           <input type="text" name="user" /><br />
+           <br />
+           <input type="hidden" name="change" value="camap" />
+           <input type="hidden" name="form.submitted" value="1" />
+           <input type="submit" class="context"  value="Add new camap entry" />
+         </form>
+   
+	<h1>DN Mappings</h1>
+
+	 <p />
+         These map given Subject DN's to a list of user names.
+         The user with this Subject DN can log in as any of those
+         user names with his certificate, without a password.
+
+         <form action="manage_updateMappings" method="POST">
+         <table border="1">
+           <tr><th>_</th><th>Subject DN</th><th>user</th></tr>
+           <tr tal:repeat="key dnmap/keys">
+	       <td> <input type="checkbox" name="deleteme:list" tal:attributes="value python:key+'+'+dnmap.get(key)">
+               <td tal:content="key">issuer</td>
+               <td tal:content="python:dnmap.get(key)">user</td>
+           </tr>
+         </table>
+	   <p />
+           <input type="submit" class="context"  value="Delete checked entries"/>
+           <input type="hidden" name="change" value="del_dnmap" />
+           <input type="hidden" name="form.submitted" value="1" />
+         </form>
+	 <p />
+         <form action="manage_updateMappings" method="POST">
+	   Subject DN:<br />
+           <input type="text" name="s_dn" size="40" /><br />
+	   User:<br />
+           <input type="text" name="user" /><br />
+           <br />
+           <input type="submit" class="context"  value="Add new dnmap entry"/>
+           <input type="hidden" name="change" value="dnmap" />
+           <input type="hidden" name="form.submitted" value="1" />
+         </form>
+
+    
+    </div>
+
+  </body>
+</html>
+

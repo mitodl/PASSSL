@@ -1,0 +1,6 @@
+[validators]
+validators = validate_emailaddr, validate_registration
+
+[actions]
+action.failure = traverse_to: string:join_form
+action.success = traverse_to: string:register
